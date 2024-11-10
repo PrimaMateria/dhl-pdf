@@ -1,11 +1,9 @@
+import { ChangeEvent, useCallback, useState } from "react";
 import "./App.css";
 import { degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
-async function modifyPdf() {
-  const url = "https://pdf-lib.js.org/assets/with_update_sections.pdf";
-  const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
-
-  const pdfDoc = await PDFDocument.load(existingPdfBytes);
+async function modifyPdf(pdfBytes: ArrayBuffer) {
+  const pdfDoc = await PDFDocument.load(pdfBytes);
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
   const pages = pdfDoc.getPages();
@@ -24,18 +22,46 @@ async function modifyPdf() {
 }
 
 function App() {
+  const [pdfSrc, setPdfSrc] = useState<string | undefined>(undefined);
+
+  const onPdfUploaded = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      if (event === null || event.target.files === null) return;
+
+      const file = event.target.files[0];
+      if (file) {
+        // Read the uploaded file as ArrayBuffer
+        const pdfBytes = await file.arrayBuffer();
+
+        // Modify the PDF
+        const pdfDoc = await modifyPdf(pdfBytes);
+
+        // Save modified PDF as Data URI and update the iframe src
+        const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
+        setPdfSrc(pdfDataUri);
+      }
+    },
+    [],
+  );
+
   return (
     <div id="app">
-      <iframe
-        ref={async (ref) => {
-          if (ref) {
-            const pdfDoc = await modifyPdf();
-            const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
-            ref.src = pdfDataUri;
-          }
-        }}
-        id="pdf"
-      ></iframe>
+      <div>
+        <h1>DHL PDF Cleaner</h1>
+
+        <div className="formField">
+          <label htmlFor="file">Choose pdf file to upload</label>
+          <input
+            type="file"
+            id="file"
+            name="file"
+            accept="application/pdf"
+            onChange={onPdfUploaded}
+          />
+        </div>
+      </div>
+
+      {pdfSrc && <iframe id="pdf" src={pdfSrc}></iframe>}
     </div>
   );
 }
