@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { PDFDocument, rgb } from "pdf-lib";
 
@@ -40,6 +40,12 @@ function App() {
     [],
   );
 
+  useEffect(() => {
+    if (pdfSrc) {
+      window.open(pdfSrc, "_blank");
+    }
+  }, [pdfSrc]);
+
   return (
     <div id="app">
       <div>
@@ -56,8 +62,6 @@ function App() {
           />
         </div>
       </div>
-
-      {pdfSrc && <iframe id="pdf" src={pdfSrc}></iframe>}
     </div>
   );
 }
