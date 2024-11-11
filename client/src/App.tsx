@@ -1,21 +1,21 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import "./App.css";
-import { PDFDocument, rgb } from "pdf-lib";
+// import { PDFDocument, rgb } from "pdf-lib";
 
-async function modifyPdf(pdfBytes: ArrayBuffer) {
-  const pdfDoc = await PDFDocument.load(pdfBytes);
+// async function modifyPdf(pdfBytes: ArrayBuffer) {
+//   const pdfDoc = await PDFDocument.load(pdfBytes);
 
-  const pages = pdfDoc.getPages();
-  const firstPage = pages[0];
-  const { width, height } = firstPage.getSize();
+//   const pages = pdfDoc.getPages();
+//   const firstPage = pages[0];
+//   const { width, height } = firstPage.getSize();
 
-  const svgPath = `M 0,${height / 2} L ${width},${height / 2} L ${width},${height} L 0,${height} Z`;
+//   const svgPath = `M 0,${height / 2} L ${width},${height / 2} L ${width},${height} L 0,${height} Z`;
 
-  firstPage.moveTo(0, firstPage.getHeight());
-  firstPage.drawSvgPath(svgPath, { color: rgb(1, 1, 1) });
+//   firstPage.moveTo(0, firstPage.getHeight());
+//   firstPage.drawSvgPath(svgPath, { color: rgb(1, 1, 1) });
 
-  return pdfDoc;
-}
+//   return pdfDoc;
+// }
 
 function App() {
   const [pdfSrc, setPdfSrc] = useState<string | undefined>(undefined);
@@ -26,15 +26,25 @@ function App() {
 
       const file = event.target.files[0];
       if (file) {
-        // Read the uploaded file as ArrayBuffer
-        const pdfBytes = await file.arrayBuffer();
+        const formData = new FormData();
+        formData.append("pdf", file);
 
-        // Modify the PDF
-        const pdfDoc = await modifyPdf(pdfBytes);
+        try {
+          const response = await fetch("/api/upload-pdf", {
+            method: "POST",
+            body: formData,
+          });
 
-        // Save modified PDF as Data URI and update the iframe src
-        const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
-        setPdfSrc(pdfDataUri);
+          if (!response.ok) {
+            throw new Error("Failed to modify PDF");
+          }
+
+          const pdfBlob = await response.blob();
+          const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+          setPdfSrc(pdfBlobUrl);
+        } catch (error) {
+          console.error("Error uploading or modifying PDF:", error);
+        }
       }
     },
     [],
