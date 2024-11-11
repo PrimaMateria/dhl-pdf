@@ -1,0 +1,12 @@
+{
+  "name": "dhl-pdf-api",
+  "version": "1.0.0",
+  "main": "app.js",
+  "author": "PrimaMateria",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}
