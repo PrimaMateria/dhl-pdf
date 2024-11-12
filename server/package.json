@@ -1,13 +1,22 @@
 {
   "name": "dhl-pdf-api",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "src/app.js",
   "author": "PrimaMateria",
   "scripts": {
-    "start": "node app.js"
+    "start": "node src/app.js",
+    "lint": "eslint src/"
   },
   "dependencies": {
     "express": "^4.21.1",
     "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.14.0",
+    "eslint": "^9.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.12.0",
+    "prettier": "3.3.3"
   }
 }
