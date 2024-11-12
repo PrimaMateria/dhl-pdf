@@ -1,16 +1,20 @@
 import { ChangeEvent, useCallback, useState } from "react";
 import printJS from "print-js";
-import "./App.css";
 
 function App() {
   const [pdf, setPdf] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | undefined>(undefined);
 
   const onPdfUploaded = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
+      setPdf(undefined);
+
       if (event === null || event.target.files === null) return;
 
       const file = event.target.files[0];
       if (file) {
+        setLoading(true);
         const formData = new FormData();
         formData.append("pdf", file);
 
@@ -26,9 +30,11 @@ function App() {
 
           // without data uri
           const pdfBase64 = await response.text();
+          setLoading(false);
           setPdf(pdfBase64);
         } catch (error) {
-          console.error("Error uploading or modifying PDF:", error);
+          setLoading(false);
+          setError(error as Error);
         }
       }
     },
@@ -54,27 +60,40 @@ function App() {
   }, [pdf]);
 
   return (
-    <div id="app">
-      <div>
-        <h1>DHL PDF Cleaner</h1>
+    <div className="font-sans flex flex-col gap-4 m-4">
+      <h1 className="text-2xl font-bold">DHL PDF Cleaner</h1>
+      <label htmlFor="file">Choose PDF file to upload</label>
+      <input
+        type="file"
+        id="file"
+        name="file"
+        accept="application/pdf"
+        onChange={onPdfUploaded}
+      />
 
-        <div className="formField">
-          <label htmlFor="file">Choose PDF file to upload</label>
-          <input
-            type="file"
-            id="file"
-            name="file"
-            accept="application/pdf"
-            onChange={onPdfUploaded}
-          />
-        </div>
-      </div>
+      {loading && <div>Processing</div>}
+
+      {error && <div>Error uploading or modifying PDF: ${error.message}</div>}
 
       {pdf && (
-        <div>
-          <button onClick={handlePrint}>Print</button>
-          <button onClick={handleOpen}>Open</button>
-        </div>
+        <>
+          <div>
+            <button
+              onClick={handlePrint}
+              className="bg-sky-300 p-3 w-64 rounded-md"
+            >
+              Print
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={handleOpen}
+              className="bg-teal-300 p-3 w-64 rounded-md"
+            >
+              Open
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
