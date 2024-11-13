@@ -1,5 +1,4 @@
 import { ChangeEvent, useCallback, useState } from "react";
-import printJS from "print-js";
 
 function App() {
   const [pdf, setPdf] = useState<string | undefined>(undefined);
@@ -41,15 +40,6 @@ function App() {
     [],
   );
 
-  const handlePrint = useCallback(() => {
-    const print = async () => {
-      if (pdf) {
-        printJS({ printable: pdf, type: "pdf", base64: true });
-      }
-    };
-    print();
-  }, [pdf]);
-
   const handleOpen = useCallback(() => {
     const open = async () => {
       if (pdf) {
@@ -77,14 +67,6 @@ function App() {
 
       {pdf && (
         <>
-          <div>
-            <button
-              onClick={handlePrint}
-              className="bg-sky-300 p-3 w-64 rounded-md"
-            >
-              Print
-            </button>
-          </div>
           <div>
             <button
               onClick={handleOpen}
