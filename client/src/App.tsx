@@ -1,7 +1,8 @@
 import { ChangeEvent, useCallback, useState } from "react";
+import { saveAs } from "file-saver";
 
 function App() {
-  const [pdf, setPdf] = useState<string | undefined>(undefined);
+  const [pdf, setPdf] = useState<Blob | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | undefined>(undefined);
 
@@ -28,9 +29,9 @@ function App() {
           }
 
           // without data uri
-          const pdfBase64 = await response.text();
+          const pdf = await response.blob();
           setLoading(false);
-          setPdf(pdfBase64);
+          setPdf(pdf);
         } catch (error) {
           setLoading(false);
           setError(error as Error);
@@ -43,7 +44,7 @@ function App() {
   const handleOpen = useCallback(() => {
     const open = async () => {
       if (pdf) {
-        window.open("data:application/pdf;base64," + pdf, "_blank");
+        saveAs(URL.createObjectURL(pdf));
       }
     };
     open();
@@ -72,7 +73,7 @@ function App() {
               onClick={handleOpen}
               className="bg-cyan-300 p-3 w-64 rounded-md"
             >
-              Open
+              Download
             </button>
           </div>
         </>

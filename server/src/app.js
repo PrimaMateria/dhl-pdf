@@ -11,7 +11,8 @@ app.post("/api/upload-pdf", upload.single("pdf"), async (req, res) => {
   try {
     const pdfBuffer = req.file.buffer;
     const modifiedPdfBuffer = await modifyPdf(pdfBuffer);
-    res.setHeader("Content-Type", "application/pdf");
+    res.status(200);
+    res.type("pdf");
     res.send(modifiedPdfBuffer);
   } catch (error) {
     console.error("Error modifying PDF:", error);
@@ -40,5 +41,7 @@ async function modifyPdf(pdfBuffer) {
 
   firstPage.moveTo(0, firstPage.getHeight());
   firstPage.drawSvgPath(svgPath, { color: rgb(1, 1, 1) });
-  return await pdfDoc.saveAsBase64();
+  const pdfBytes = await pdfDoc.save();
+  const modifiedPdfBuffer = Buffer.from(pdfBytes.buffer, "binary");
+  return modifiedPdfBuffer;
 }
