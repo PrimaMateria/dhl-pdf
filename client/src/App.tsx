@@ -70,7 +70,7 @@ function App() {
           <div>
             <button
               onClick={handleOpen}
-              className="bg-teal-300 p-3 w-64 rounded-md"
+              className="bg-cyan-300 p-3 w-64 rounded-md"
             >
               Open
             </button>
