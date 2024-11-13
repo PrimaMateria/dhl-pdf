@@ -23,7 +23,7 @@ COPY --from=server-build /app/server ./server
 
 # Set environment variables and expose ports as needed
 ENV NODE_ENV=production
-EXPOSE 3000  # or your server port
+EXPOSE 3000  
 
 # Start the backend server 
 CMD ["node", "server/src/app.js"]
