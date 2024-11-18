@@ -34,13 +34,14 @@ async function modifyPdf(pdfBuffer) {
   const pdfDoc = await PDFDocument.load(pdfBuffer);
 
   const pages = pdfDoc.getPages();
-  const firstPage = pages[0];
-  const { width, height } = firstPage.getSize();
+
+  const targetPage = pages[pages.lenght === 1 ? 0 : 1];
+  const { width, height } = targetPage.getSize();
 
   const svgPath = `M 0,${height / 2} L ${width},${height / 2} L ${width},${height} L 0,${height} Z`;
 
-  firstPage.moveTo(0, firstPage.getHeight());
-  firstPage.drawSvgPath(svgPath, { color: rgb(1, 1, 1) });
+  targetPage.moveTo(0, targetPage.getHeight());
+  targetPage.drawSvgPath(svgPath, { color: rgb(1, 1, 1) });
   const pdfBytes = await pdfDoc.save();
   const modifiedPdfBuffer = Buffer.from(pdfBytes.buffer, "binary");
   return modifiedPdfBuffer;
