@@ -35,7 +35,7 @@ async function modifyPdf(pdfBuffer) {
 
   const pages = pdfDoc.getPages();
 
-  const targetPage = pages[pages.lenght === 1 ? 0 : 1];
+  const targetPage = pages[pages.length === 2 ? 1 : 0];
   const { width, height } = targetPage.getSize();
 
   const svgPath = `M 0,${height / 2} L ${width},${height / 2} L ${width},${height} L 0,${height} Z`;
